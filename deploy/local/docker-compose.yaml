@@ -1,0 +1,110 @@
+services:
+  mtt-redis:
+    container_name: mtt-redis
+    hostname: mtt-redis
+    image: library/redis:7-alpine
+    init: true
+    networks:
+      - mtt-network
+
+  mtt-mysql:
+    container_name: mtt-mysql
+    hostname: mtt-mysql
+    image: mariadb
+#    init: true
+    networks:
+      - mtt-network
+    environment:
+      MARIADB_DATABASE: ${DB_DATABASE}
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    ports:
+      - 7310:3306
+#    volumes:
+#      - mtt-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  mtt-rabbitmq:
+    container_name: mtt-rabbitmq
+    image: rabbitmq:4.1.2-management
+    hostname: mtt-rabbitmq
+    networks:
+      - mtt-network
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+#      RABBITMQ_PID_FILE: /var/lib/rabbitmq/mnesia/rabbitmq
+#    volumes:
+#      - mtt-rabbitmq:/var/lib/rabbitmq
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:5672" ]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+#    labels:
+#      - traefik.enable=true
+#      - traefik.docker.network=proxy-network
+#      - traefik.http.routers.mtt-rabbitmq.rule=(Host(`rabbitmq.${HOST}`))
+#      - traefik.http.services.mtt-rabbitmq.loadbmttancer.server.port=15672
+
+  mtt-app:
+    container_name: mtt-app
+    hostname: mtt-app
+    networks:
+      - mtt-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      mtt-mysql-test:
+        condition: service_healthy
+      mtt-redis-test:
+        condition: service_healthy
+      mtt-rabbitmq-test:
+        condition: service_healthy
+    env_file:
+      - .env
+#      - local.env
+    build:
+      dockerfile: ${PWD}/deploy/php/loc.Dockerfile
+      context: ${PWD}/
+    deploy:
+      replicas: 1
+    volumes:
+      - ${PWD}/:/var/www
+
+  mtt-app-nginx:
+     image: nginx
+     container_name: mtt-app-nginx
+     init: true
+     networks:
+       - mtt-network
+     hostname: ${HOST}
+     links:
+       - mtt-app
+     depends_on:
+       - mtt-app
+     ports:
+       - 80:80
+     volumes:
+       - ${PWD}/deploy/nginx/templates:/etc/nginx/templates
+       - ${PWD}/public:/var/www/public
+     environment:
+       VIRTUAL_HOST: ${HOST}
+       NGINX_BACKEND_HOST: mtt-app
+       NGINX_SERVER_ROOT: /var/www/public
+
+networks:
+  mtt-network:
+    name: mtt-network
+
+volumes:
+  mtt-mysql-data:
+  mtt-rabbitmq:

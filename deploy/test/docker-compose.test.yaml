@@ -1,0 +1,59 @@
+services:
+  mtt-redis-test:
+    container_name: mtt-redis-test
+    image: library/redis:7-alpine
+    hostname: mtt-redis-test
+    networks:
+      - mtt-network-test
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+
+  mtt-mysql-test:
+    container_name: mtt-mysql-test
+    image: mariadb
+    init: true
+    hostname: mtt-mysql-test
+    networks:
+      - mtt-network-test
+    env_file:
+      - .env.test
+    environment:
+      MARIADB_DATABASE: ${DB_DATABASE}
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_RANDOM_ROOT_PASSWORD: 1
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  mtt-app-test:
+    container_name: mtt-app-test
+    build:
+      dockerfile: ${PWD}/deploy/php/loc.Dockerfile
+      context: ${PWD}/
+    hostname: mtt-app-test
+    networks:
+      - mtt-network-test
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env.test
+    depends_on:
+      mtt-mysql-test:
+        condition: service_healthy
+      mtt-redis-test:
+        condition: service_healthy
+    volumes:
+      - ${PWD}/:/var/www
+#      - ${PWD}/deploy/test/.env.test:/var/www/.env
+      - ${PWD}/deploy/test/.env.test:/var/www/.env.testing
+
+networks:
+  mtt-network-test:
+    name: mtt-network-test
