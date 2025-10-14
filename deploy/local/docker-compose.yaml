@@ -6,6 +6,12 @@ services:
     init: true
     networks:
       - mtt-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 3
 
   mtt-mysql:
     container_name: mtt-mysql
@@ -41,14 +47,16 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+      RABBITMQ_ALLOW_TIME_STEP_BACKWARD: "true"
 #      RABBITMQ_PID_FILE: /var/lib/rabbitmq/mnesia/rabbitmq
 #    volumes:
 #      - mtt-rabbitmq:/var/lib/rabbitmq
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:5672" ]
-      interval: 30s
-      timeout: 30s
-      retries: 3
+      test: [ "CMD-SHELL", "rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_port_connectivity" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 #    labels:
 #      - traefik.enable=true
 #      - traefik.docker.network=proxy-network
@@ -63,11 +71,11 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
-      mtt-mysql-test:
+      mtt-mysql:
         condition: service_healthy
-      mtt-redis-test:
+      mtt-redis:
         condition: service_healthy
-      mtt-rabbitmq-test:
+      mtt-rabbitmq:
         condition: service_healthy
     env_file:
       - .env

@@ -8,7 +8,7 @@
 
 /deploy
 !/deploy/nginx/templates/*
-!/deploy/php-fpm/entrypoint.sh
+!/deploy/php/entrypoint.sh
 
 storage/app/*
 storage/database/*
