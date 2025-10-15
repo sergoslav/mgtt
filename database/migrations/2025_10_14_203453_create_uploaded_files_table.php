@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('uploaded_files', function (Blueprint $table) {
             $table->id();
             $table->string('original_name');
-            $table->string('stored_name', 100);
+            $table->string('stored_name', 30);
             $table->enum('import_status', array_column(UploadedFileImportStatus::cases(), 'value'))->default(UploadedFileImportStatus::Pending);
             $table->timestamps();
 

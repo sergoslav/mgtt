@@ -17,4 +17,14 @@ class Row extends Model
 {
     /** @use HasFactory<\Database\Factories\RowFactory> */
     use HasFactory;
+
+    protected  $fillable = [
+        'id',
+        'name',
+        'date',
+    ];
+    protected $casts = [
+        'id' => 'integer',
+        'date' => 'date:d.m.Y',
+    ];
 }
