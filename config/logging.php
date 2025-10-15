@@ -112,11 +112,7 @@ return [
             'handler_with' => [
                 'stream' => 'php://stdout',
             ],
-            'formatter' => Monolog\Formatter\JsonFormatter::class,
-            'formatter_with' => [
-                'batchMode' => Monolog\Formatter\LineFormatter::SIMPLE_FORMAT,
-                'appendNewline' => true,
-            ],
+            'formatter' => Monolog\Formatter\LineFormatter::class,
             'processors' => [PsrLogMessageProcessor::class],
         ],
 

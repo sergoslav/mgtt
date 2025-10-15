@@ -4,7 +4,9 @@ namespace App\Imports;
 
 use App\Events\RowCreated;
 use App\Models\Row;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\RemembersChunkOffset;
 use Maatwebsite\Excel\Concerns\RemembersRowNumber;
@@ -51,8 +53,8 @@ class RowsImport implements ToModel, WithHeadingRow, WithUpserts, WithBatchInser
 
         $rowModel =  new Row([
             'id' => $id,
-            'name' => $row['name'] ?? null,
-            'date' => $row['date'] ?? null,
+            'name' => $row['name'],
+            'date' => strlen($row['date']) > 8 ? Carbon::createFromFormat("d.m.Y", $row['date']) : Carbon::createFromFormat("d.m.y", $row['date']),
         ]);
 
         //call it here and run after commit. as soon as can't catch on mass update by other way ¯\_(ツ)_/¯
