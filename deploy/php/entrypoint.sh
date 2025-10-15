@@ -6,6 +6,10 @@ PHP_FPM_PID='/php-fpm.pid'
 if [ ! -f /var/www/vendor/autoload.php ]; then
     composer install setup
 fi
+if [ ! -f /var/www/package-lock.json ]; then
+    npm install
+    npm run build
+fi
 
 #Check pid
 wait_for_pid () {

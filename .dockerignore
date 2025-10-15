@@ -9,6 +9,7 @@
 /deploy
 !/deploy/nginx/templates/*
 !/deploy/php/entrypoint.sh
+!/deploy/node/entrypoint.sh
 
 storage/app/*
 storage/database/*

@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y \
         libpng-dev \
         zip \
         unzip \
+        # Utils to support Makefile
+        bsdmainutils \
       #  && apt-get install -y libmagickwand-dev --no-install-recommends \
         # clean up \
         && apt-get autoclean -y \
@@ -34,6 +36,15 @@ RUN \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/pear/
 
+# Install npm
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g npm@latest \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 #Install composer
 RUN curl --silent --show-error https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 ### BASE PART FOR ALL ENV ### < END
@@ -48,4 +59,10 @@ USER $user
 COPY deploy/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+COPY deploy/node/entrypoint.sh /usr/local/bin/node-entrypoint.sh
+RUN chmod +x /usr/local/bin/node-entrypoint.sh
+
+#RUN npm install
+#RUN npm run build
+
+#ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

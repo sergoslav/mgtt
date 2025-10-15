@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Events\RowCreated;
 use App\Models\Row;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -48,11 +49,16 @@ class RowsImport implements ToModel, WithHeadingRow, WithUpserts, WithBatchInser
             self::$lastId = $id;
         }
 
-        return new Row([
+        $rowModel =  new Row([
             'id' => $id,
             'name' => $row['name'] ?? null,
             'date' => $row['date'] ?? null,
         ]);
+
+        //call it here and run after commit. as soon as can't catch on mass update by other way ¯\_(ツ)_/¯
+        RowCreated::dispatch($rowModel);
+
+        return $rowModel;
     }
 
     public function uniqueBy(): string

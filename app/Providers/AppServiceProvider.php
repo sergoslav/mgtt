@@ -24,13 +24,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        DB::listen(function(\Illuminate\Database\Events\QueryExecuted $query) {
-            if ($this->app->environment('local')) {
-                File::append(
-                    storage_path('/logs/query.log'),
-                    sprintf('[%s][%f] %s [%s]%s%s', Carbon::now()->format('Y-m-d H:i:s'), $query->time, $query->sql, implode(', ', $query->bindings), PHP_EOL, PHP_EOL)
-                );
-            }
-        });
+//        DB::listen(function(\Illuminate\Database\Events\QueryExecuted $query) {
+//            if ($this->app->environment('local')) {
+//                File::append(
+//                    storage_path('/logs/query.log'),
+//                    sprintf('[%s][%f] %s [%s]%s%s', Carbon::now()->format('Y-m-d H:i:s'), $query->time, $query->sql, implode(', ', $query->bindings), PHP_EOL, PHP_EOL)
+//                );
+//            }
+//        });
     }
 }
