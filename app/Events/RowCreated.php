@@ -13,8 +13,8 @@ use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class RowCreated implements ShouldBroadcastNow, ShouldDispatchAfterCommit //use ShouldBroadcastNow to send broadcast faster =)
-//class RowCreated implements ShouldBroadcast, ShouldDispatchAfterCommit
+//class RowCreated implements ShouldBroadcastNow, ShouldDispatchAfterCommit //use ShouldBroadcastNow to send broadcast faster =)
+class RowCreated implements ShouldBroadcast, ShouldDispatchAfterCommit
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 

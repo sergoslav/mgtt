@@ -36,7 +36,7 @@ services:
       timeout: 5s
       retries: 3
 
-  mtt-app:
+  mtt-app: &service-app
     container_name: mtt-app
     build:
       dockerfile: ${PWD}/deploy/php/loc.Dockerfile
@@ -59,26 +59,16 @@ services:
       - ${PWD}/:/var/www
 
   mtt-app-worker:
+    <<: *service-app
     container_name: mtt-app-worker
-    build:
-      dockerfile: ${PWD}/deploy/php/loc.Dockerfile
-      context: ${PWD}/
     restart: always
-    hostname: mtt-app-worker
-    networks:
-      - mtt-network
-    depends_on:
-      mtt-mysql:
-        condition: service_healthy
-      mtt-redis:
-        condition: service_healthy
-      mtt-reverb:
-        condition: service_started
-    env_file:
-      - .env
-    command: [ "php", "/var/www/artisan", "queue:work", "--queue=default,import"]
-    volumes:
-      - ${PWD}/:/var/www
+    command: [ "php", "/var/www/artisan", "queue:work", "--queue=default"]
+
+  mtt-app-worker-import:
+    <<: *service-app
+    container_name: mtt-app-worker-import
+    restart: always
+    command: [ "php", "/var/www/artisan", "queue:work", "--queue=import" ]
 
   mtt-app-nginx:
      image: nginx
@@ -102,13 +92,10 @@ services:
        NGINX_SERVER_ROOT: /var/www/public
 
   mtt-reverb:
-    build:
-      dockerfile: ${PWD}/deploy/php/loc.Dockerfile
-      context: ${PWD}/
+    <<: *service-app
+    container_name: mtt-reverb
     restart: always
     hostname: localhost
-    env_file:
-      - .env
     environment:
       LOG_CHANNEL: stdout
 #    command: [ "php", "/var/www/artisan", "reverb:start", "--port=18080"]
@@ -116,10 +103,6 @@ services:
     stop_signal: SIGTERM # Set this for graceful shutdown if you're using fpm-apache or fpm-nginx
     ports:
       - "18080:18080"
-    networks:
-      - mtt-network
-    volumes:
-      - ${PWD}/:/var/www
 
 networks:
   mtt-network:
