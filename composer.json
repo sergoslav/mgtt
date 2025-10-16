@@ -1,10 +1,16 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "sergoslav/mgtt",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Laravel-based application for processing Excel files and managing rows with progress tracking via Redis and events.",
+    "keywords": ["laravel", "excel"],
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Sergey Petrov",
+            "email": "sergoslav@gmail.com"
+        }
+    ],
     "require": {
         "php": "^8.4",
         "laravel/framework": "^12.0",
@@ -42,8 +48,7 @@
             "npm run build"
         ],
         "dev": [
-            "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
+            "make up"
         ],
         "test": [
             "@php artisan config:clear --ansi",
