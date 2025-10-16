@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Services\Contracts\FileStorageServiceProvider;
 use App\Services\Contracts\ImportServiceProvider;
-use App\Services\ImportServiceService;
+use App\Services\FileStorageService;
+use App\Services\RowImportService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -16,7 +18,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(ImportServiceProvider::class, ImportServiceService::class);
+        $this->app->bind(ImportServiceProvider::class, RowImportService::class);
+        $this->app->bind(FileStorageServiceProvider::class, FileStorageService::class);
     }
 
     /**

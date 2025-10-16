@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UploadedFile>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ImportFile>
  */
-class UploadedFileFactory extends Factory
+class ImportFileFactory extends Factory
 {
     /**
      * Define the model's default state.

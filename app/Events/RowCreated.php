@@ -45,6 +45,9 @@ class RowCreated implements ShouldBroadcast, ShouldDispatchAfterCommit
         return 'row.created';
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function broadcastWith(): array
     {
         return [

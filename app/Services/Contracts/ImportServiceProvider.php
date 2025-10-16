@@ -7,8 +7,8 @@ interface ImportServiceProvider
     /**
      * Import rows from File to DataBase
      *
-     * @param int $uploadedFileId
+     * @param int $importFileId
      * @return void
      */
-    public function import(int $uploadedFileId): void;
+    public function import(int $importFileId): void;
 }

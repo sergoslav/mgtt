@@ -6,7 +6,7 @@ use App\Services\Contracts\ImportServiceProvider;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
-class ImportJob implements ShouldQueue
+class RowImportJob implements ShouldQueue
 {
     use Queueable;
 
@@ -14,7 +14,7 @@ class ImportJob implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        public int  $uploadedFileId,
+        public int $importFileId,
     )
     {
         $this->onQueue('import');
@@ -25,6 +25,6 @@ class ImportJob implements ShouldQueue
      */
     public function handle(ImportServiceProvider $service): void
     {
-        $service->import(uploadedFileId: $this->uploadedFileId);
+        $service->import(importFileId: $this->importFileId);
     }
 }

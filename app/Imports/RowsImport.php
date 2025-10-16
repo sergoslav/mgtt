@@ -27,15 +27,20 @@ class RowsImport implements ToModel, WithHeadingRow, WithUpserts, WithBatchInser
     protected static int $lastId = 0;
 
     public function __construct(
-        public ?string $progressKey = null
+        public string $progressKey = ''
     ) {
-        if (is_null($this->progressKey)) {
+        if (empty($this->progressKey)) {
             $this->progressKey = Str::uuid()->toString();
         }
 
         Cache::store('redis')->set($this->progressKey, 0); // инициализируем
     }
 
+    /**
+     * @param array<string, mixed> $row
+     * @return Row
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
     public function model(array $row): Row
     {
         #Store progress to Redis

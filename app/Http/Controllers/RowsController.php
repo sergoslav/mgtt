@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RowsRequest;
 use App\Models\Row;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -13,7 +14,7 @@ class RowsController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(RowsRequest $request): \Illuminate\Http\JsonResponse
+    public function __invoke(RowsRequest $request): JsonResponse
     {
         #TODO: add pagination
 
@@ -28,7 +29,7 @@ class RowsController extends Controller
         $grouped = $rows->groupBy('date');
 
         $result = $grouped->map(fn (Collection $items, $date) => [
-            'date' => Carbon::make($date)->format('Y-m-d'),
+            'date' => Carbon::make($date)?->format('Y-m-d'),
             'rows' => $items->map(fn ($row) => [
                 'id' => $row->id,
                 'name' => $row->name,
