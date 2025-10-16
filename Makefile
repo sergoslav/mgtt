@@ -77,7 +77,7 @@ bash:
 ## up-test: docker compose up -d WITH Test environment
 .PHONY: up-test
 up-test:
-	docker compose -p $(TEST_PROJECT) -f $(TEST_DOCKER_COMPOSE_FILE) up -d
+	docker compose -p $(TEST_PROJECT) -f $(TEST_DOCKER_COMPOSE_FILE) up -d --build
 
 ## run-test: docker compose up -d WITH Test environment
 .PHONY: run-test

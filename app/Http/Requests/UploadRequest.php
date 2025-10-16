@@ -20,7 +20,7 @@ class UploadRequest extends FormRequest
                 'file',
                 'mimes:xlsx,xls',
                 'max:10240',    // max 100 MB
-                new UploadRowsHeader()
+                new UploadRowsHeader
             ],
         ];
     }

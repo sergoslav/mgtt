@@ -4,19 +4,16 @@ namespace App\Services;
 
 use App\Enums\ImportFileStatus;
 use App\Helpers\UploadHelper;
-use App\Imports\RowsImport;
 use App\Jobs\RowImportJob;
 use App\Models\ImportFile;
 use App\Services\Contracts\FileStorageServiceProvider;
-use App\Services\Contracts\ImportServiceProvider;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Facades\Excel;
 
 class FileStorageService implements FileStorageServiceProvider
 {
-    public function upload(\Illuminate\Http\UploadedFile $file): ImportFile
+    public function upload(UploadedFile $file): ImportFile
     {
         $originalName = $file->getClientOriginalName();
         $storedName = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();

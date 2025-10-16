@@ -18,13 +18,11 @@ services:
     hostname: mtt-mysql-test
     networks:
       - mtt-network-test
-    env_file:
-      - .env.test
     environment:
       MARIADB_DATABASE: ${DB_DATABASE}
       MARIADB_USER: ${DB_USERNAME}
       MARIADB_PASSWORD: ${DB_PASSWORD}
-      MARIADB_RANDOM_ROOT_PASSWORD: 1
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     healthcheck:
       test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
       start_period: 10s
@@ -40,10 +38,6 @@ services:
     hostname: mtt-app-test
     networks:
       - mtt-network-test
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    env_file:
-      - .env.test
     depends_on:
       mtt-mysql-test:
         condition: service_healthy
@@ -52,7 +46,7 @@ services:
     volumes:
       - ${PWD}/:/var/www
 #      - ${PWD}/deploy/test/.env.test:/var/www/.env
-      - ${PWD}/deploy/test/.env.test:/var/www/.env.testing
+      - ${PWD}/deploy/test/.env:/var/www/.env.testing
 
 networks:
   mtt-network-test:

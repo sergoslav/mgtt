@@ -24,43 +24,32 @@ class RowsImport implements ToModel, WithHeadingRow, WithUpserts, WithBatchInser
     use RemembersRowNumber;
     use RemembersChunkOffset;
 
-    protected static int $lastId = 0;
+    protected int $lastId = 0;
 
     public function __construct(
-        public string $progressKey = ''
+        public string $progressKey
     ) {
-        if (empty($this->progressKey)) {
-            $this->progressKey = Str::uuid()->toString();
-        }
-
-        Cache::store('redis')->set($this->progressKey, 0); // инициализируем
+        Cache::store('redis')->set($this->progressKey, 0);
     }
 
     /**
      * @param array<string, mixed> $row
      * @return Row
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function model(array $row): Row
     {
-        #Store progress to Redis
-        $currentRowNumber = $this->getRowNumber();
-        $currentRowNumber--; //Do we need exclude header in this calc?
-        Cache::store('redis')->set($this->progressKey, $currentRowNumber); //Is it critical to update it after row inserter to DB?
-
         #calculate value in case a formula uses
-        $id = is_numeric($row['id'] ?? null) ? (int)$row['id'] : null;
-        if ($id === null) {
-            $id = ++self::$lastId;
-        } else {
-            self::$lastId = $id;
-        }
+        $id = is_numeric($row['id'] ?? null) ? (int)$row['id'] : ++$this->lastId;
+        $this->lastId = $id;
 
         $rowModel =  new Row([
             'id' => $id,
             'name' => $row['name'],
             'date' => strlen($row['date']) > 8 ? Carbon::createFromFormat("d.m.Y", $row['date']) : Carbon::createFromFormat("d.m.y", $row['date']),
         ]);
+
+        #Store progress to Redis
+        Cache::store('redis')->increment($this->progressKey);
 
         //call it here and run after commit. as soon as can't catch on mass update by other way ¯\_(ツ)_/¯
         RowCreated::dispatch($rowModel);
@@ -78,7 +67,7 @@ class RowsImport implements ToModel, WithHeadingRow, WithUpserts, WithBatchInser
     {
         return 1000;
     }
-//
+
     public function chunkSize(): int
     {
         return 1000;
