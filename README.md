@@ -23,6 +23,8 @@ date (d.m.Y)
 
 ## Запуск сервиса в Docker
 ```shell
+git clone https://github.com/sergoslav/mgtt.git
+cd mgtt
 make up
 ```
 - Сервис: http://localhost:80  

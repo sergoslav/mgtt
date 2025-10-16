@@ -98,8 +98,8 @@ services:
     hostname: localhost
     environment:
       LOG_CHANNEL: stdout
-#    command: [ "php", "/var/www/artisan", "reverb:start", "--port=18080"]
-    command: [ "/usr/local/bin/node-entrypoint.sh"]
+    command: [ "php", "/var/www/artisan", "reverb:start", "--port=18080"]
+#    command: [ "/usr/local/bin/node-entrypoint.sh"]
     stop_signal: SIGTERM # Set this for graceful shutdown if you're using fpm-apache or fpm-nginx
     ports:
       - "18080:18080"

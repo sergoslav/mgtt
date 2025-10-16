@@ -44,6 +44,8 @@
         "setup": [
             "composer install --no-interaction --prefer-dist --optimize-autoloader",
             "@php artisan migrate --force",
+        ],
+        "setup-npm": [
             "npm install",
             "npm run build"
         ],
