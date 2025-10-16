@@ -68,7 +68,9 @@ vim:
 .PHONY: up
 up:
 	docker compose -p $(PROJECT) -f $(DOCKER_COMPOSE_FILE) up -d --build
-	echo "http://localhost:80"
+	@echo ""
+	@echo "✅ Service is running:"
+	@echo "   → http://localhost:80"
 
 ## bash: [LOC] Connect to app container
 .PHONY: bash

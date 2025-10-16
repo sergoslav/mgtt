@@ -65,7 +65,7 @@
 </script>
 
 <hr>
-<a href="{{ URL::route('rows/', ['from_date' => '2020-10-14', 'to_date' => '2020-10-20']) }}">Show Rows</a>
+<a href="{{ URL::route('rows.index', ['from_date' => '2020-10-14', 'to_date' => '2020-10-20']) }}">Show Rows</a>
 <hr>
 
 <h3>Row Import Status</h3>

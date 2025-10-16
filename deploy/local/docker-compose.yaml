@@ -54,20 +54,32 @@ services:
     env_file:
       - .env
 #      - local.env
-    command: [ "/usr/local/bin/entrypoint.sh"]
+    command: ["/usr/local/bin/entrypoint.sh"]
     volumes:
       - ${PWD}/:/var/www
+    healthcheck:
+      test: [ "CMD", "php", "/var/www/artisan", "db:monitor"]
+      start_period: 10s
+      interval: 5s
+      timeout: 5s
+      retries: 30
 
   mtt-app-worker:
     <<: *service-app
     container_name: mtt-app-worker
     restart: always
+    depends_on:
+      mtt-app:
+        condition: service_healthy
     command: [ "php", "/var/www/artisan", "queue:work", "--queue=default"]
 
   mtt-app-worker-import:
     <<: *service-app
     container_name: mtt-app-worker-import
     restart: always
+    depends_on:
+      mtt-app:
+        condition: service_healthy
     command: [ "php", "/var/www/artisan", "queue:work", "--queue=import" ]
 
   mtt-app-nginx:
@@ -96,6 +108,9 @@ services:
     container_name: mtt-reverb
     restart: always
     hostname: localhost
+    depends_on:
+      mtt-app:
+        condition: service_healthy
     environment:
       LOG_CHANNEL: stdout
     command: [ "php", "/var/www/artisan", "reverb:start", "--port=18080"]
