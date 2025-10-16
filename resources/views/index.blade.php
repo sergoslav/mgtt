@@ -29,7 +29,7 @@
         }
     </style>
 </head>
-<body>
+<hr>
 <h2>Загрузка Excel-файла</h2>
 
 <form id="uploadForm" enctype="multipart/form-data">
@@ -38,7 +38,7 @@
 </form>
 
 <h3>Upload Status</h3>
-<div class="result" id="result"></div>
+<div class="result" id="result">{}</div>
 
 <script>
     document.getElementById('uploadForm').addEventListener('submit', async e => {
@@ -63,6 +63,8 @@
         result.textContent = JSON.stringify(data, null, 2);
     });
 </script>
+
+<hr>
 
 <h3>Row Import Status</h3>
 <!-- Rows import status container -->
